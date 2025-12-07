@@ -1,0 +1,5 @@
+{
+  "name": "Global Pulse",
+  "description": "An AI-powered news visualizer that fetches the latest stories from any country and generates creative artwork to accompany them.",
+  "requestFramePermissions": []
+}
