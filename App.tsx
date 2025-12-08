@@ -7,32 +7,50 @@ import { NewsData, LoadingState as LoadState } from './types';
 import { fetchNewsAndImage } from './services/gemini';
 import { AlertCircle } from 'lucide-react';
 
+const BACKGROUND_COLORS = [
+  'bg-slate-50',
+  'bg-red-50',
+  'bg-orange-50',
+  'bg-amber-50',
+  'bg-yellow-50',
+  'bg-lime-50',
+  'bg-green-50',
+  'bg-emerald-50',
+  'bg-teal-50',
+  'bg-cyan-50',
+  'bg-sky-50',
+  'bg-blue-50',
+  'bg-indigo-50',
+  'bg-violet-50',
+  'bg-purple-50',
+  'bg-fuchsia-50',
+  'bg-pink-50',
+  'bg-rose-50'
+];
+
 const App: React.FC = () => {
   const [loadingState, setLoadingState] = useState<LoadState>(LoadState.IDLE);
   const [newsData, setNewsData] = useState<NewsData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [bgColor, setBgColor] = useState('bg-slate-50');
+
+  const changeBackgroundColor = () => {
+    // Filter out the current color to ensure it changes
+    const availableColors = BACKGROUND_COLORS.filter(c => c !== bgColor);
+    const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+    setBgColor(randomColor);
+  };
 
   const handleSearch = async (country: string) => {
+    // Change background immediately for visual feedback
+    changeBackgroundColor();
+    
     setLoadingState(LoadState.SEARCHING);
     setError(null);
     setNewsData(null);
 
     try {
-      // We can set an intermediate state if we broke the service into two calls, 
-      // but currently it handles both. We'll treat it as a sequence for UX.
-      
-      // Start logic
       const data = await fetchNewsAndImage(country);
-      
-      // Simulate a brief transition to "Generating Image" visually if it happened too fast,
-      // but realistically fetchNewsAndImage does both await calls. 
-      // If we want to update the UI between text and image, we would need to split the service function.
-      // For simplicity in this single-file service structure, we'll just show the searching state 
-      // or assume the service takes enough time that a single spinner is fine, 
-      // BUT to satisfy the prompt's "Creative Image" emphasis, let's show the user we are working on it.
-      // Since the service awaits both, we can't update state *in the middle* of the await unless we refactor.
-      // Let's keep it simple: The service awaits both.
-      
       setNewsData(data);
       setLoadingState(LoadState.COMPLETE);
     } catch (err: any) {
@@ -43,7 +61,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={`min-h-screen flex flex-col transition-colors duration-1000 ease-in-out ${bgColor}`}>
       <Header />
       
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
